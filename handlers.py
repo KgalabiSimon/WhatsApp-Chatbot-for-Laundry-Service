@@ -4,9 +4,9 @@ from twilio.rest import Client
 import os
 from dotenv import load_dotenv
 load_dotenv()
-from .registration import handle_registration
-from .ordering import handle_order
-from .referral import handle_referral
+from registration import handle_registration
+from ordering import handle_selection,order
+from referral import handle_referral
 
 # Your Twilio account SID and auth token
 account_sid = os.getenv('TWILIO_ACCOUNT_SID')
@@ -44,7 +44,9 @@ def whatsapp_reply():
                 response_message = "You've selected 'Register'. Please provide your name."
             elif message_body == '2':
                 user_states[from_number] = 'ORDER'
-                response_message = "You've selected 'Place order'. Please provide your order details."
+                # response_message = "You've selected 'Place order'. Please provide your order details."
+                response_message= order()
+
             elif message_body == '3':
                 user_states[from_number] = 'REFERRAL'
                 response_message = "You've selected 'Get referral code'. Here is your referral code: XXXX."
@@ -52,11 +54,11 @@ def whatsapp_reply():
                 response_message = "Invalid option. Please select 1, 2, or 3."
         elif user_states[from_number] == 'REGISTER':
            #handle registration
-           response_message = handle_registration(message_body, from_number)
+           response_message = handle_registration(message_body,from_number)
                     
         elif user_states[from_number] == 'ORDER':
             # Handle order...
-            response_message = handle_order(message_body, from_number)
+            response_message = handle_selection(message_body, from_number)
         elif user_states[from_number] == 'REFERRAL':
             # Handle referral...
             response_message = handle_referral(message_body, from_number)

@@ -4,6 +4,10 @@ from twilio.rest import Client
 import os
 from dotenv import load_dotenv
 load_dotenv()
+from .registration import handle_registration
+from .ordering import handle_order
+from .referral import handle_referral
+
 # Your Twilio account SID and auth token
 account_sid = os.getenv('TWILIO_ACCOUNT_SID')
 auth_token = os.getenv('TWILIO_AUTH_TOKEN')
@@ -47,21 +51,15 @@ def whatsapp_reply():
             else:
                 response_message = "Invalid option. Please select 1, 2, or 3."
         elif user_states[from_number] == 'REGISTER':
-            details = message_body.split(',')
-            if len(details) == 4:
-                #add user to the database
-                print(details[0]+details[1]+details[2] +details[3])
-                response_message = "Registration complete. Thank you!"
-            else:
-                response_message = "Please provide your details in the format: Name,Surname,DOB,Residence"
-            
+           #handle registration
+           response_message = handle_registration(message_body, from_number)
                     
         elif user_states[from_number] == 'ORDER':
             # Handle order...
-            pass
+            response_message = handle_order(message_body, from_number)
         elif user_states[from_number] == 'REFERRAL':
             # Handle referral...
-            pass
+            response_message = handle_referral(message_body, from_number)
 
     # Create a response
     resp = MessagingResponse()

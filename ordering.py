@@ -19,10 +19,11 @@ def handle_selection(message_body, from_number):
 
         selected_service = laundry_services[int(message_body) - 1]
 
-        reply =  f"You have selected {selected_service}. Your order has been placed!"
+        message =  f"You have selected {selected_service}. Your order has been placed!"
     else:
-        reply =  "Sorry, I didnt understand that. Please send order to see the list of services, or a number to select a service."
+        message =  "Sorry, I didnt understand that. Please send order to see the list of services, or a number to select a service."
 
-    return reply
+    return message
+
 
 

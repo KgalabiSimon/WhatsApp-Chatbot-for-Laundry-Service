@@ -1,4 +1,4 @@
-from flask import request
+from flask import request, jsonify
 from twilio.twiml.messaging_response import MessagingResponse
 from twilio.rest import Client
 import os
@@ -14,6 +14,7 @@ auth_token = os.getenv('TWILIO_AUTH_TOKEN')
 client = Client(account_sid, auth_token)
 
 
+
 # A dictionary to store user states
 user_states = {}
 
@@ -22,7 +23,9 @@ user_states = {}
 def whatsapp_reply():
     # Get the message body from the request
     message_body = request.values.get('Body', '')
-
+    resp = MessagingResponse()
+    response_message = None
+    # response_message = resp.message()
     print("Body is: " +message_body)  
     
 
@@ -41,9 +44,9 @@ def whatsapp_reply():
         if user_states[from_number] == 'MENU':
             if message_body =='1':
                 user_states[from_number] = 'REGISTER'
-                response_message = "You've selected 'Register'. Please provide your name."
             elif message_body == '2':
                 user_states[from_number] = 'ORDER'
+                user_states[from_number]='ORDER_HANDLE'
                 # response_message = "You've selected 'Place order'. Please provide your order details."
                 response_message= order()
 
@@ -58,16 +61,22 @@ def whatsapp_reply():
                     
         elif user_states[from_number] == 'ORDER':
             # Handle order...
-            response_message = handle_selection(message_body, from_number)
+            user_states[from_number]='ORDER_HANDLE'
+            response_message = order()
+
+        elif user_states[from_number] == 'ORDER_HANDLE':
+                response_message = handle_selection(message_body, from_number)
+           
         elif user_states[from_number] == 'REFERRAL':
             # Handle referral...
             response_message = handle_referral(message_body, from_number)
 
-    # Create a response
+    # # Create a response
     resp = MessagingResponse()
 
     # Add a message to the response
     resp.message(response_message)
+            
 
     return str(resp)
 
